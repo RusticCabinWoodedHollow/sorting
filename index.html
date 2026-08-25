@@ -73,27 +73,46 @@
             border-radius: 0 0 25px 25px;
             position: relative;
             cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
             backdrop-filter: blur(5px);
             overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 2px 10px rgba(255, 255, 255, 0.1);
+        }
+
+        .tube::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            right: 10%;
+            height: 60%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            border-radius: 50%;
+            pointer-events: none;
         }
 
         .tube:hover {
-            border-color: rgba(255, 255, 255, 0.6);
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 25px rgba(78, 197, 247, 0.4), 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 2px 10px rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
         }
 
         .tube.selected {
-            transform: translateY(-20px);
-            border-color: #00ffff;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.6),
-                        0 0 60px rgba(0, 255, 255, 0.3);
+            transform: translateY(-25px) scale(1.05);
+            border-color: #4ec5f7;
+            box-shadow: 0 0 35px rgba(78, 197, 247, 0.7), 0 10px 40px rgba(78, 197, 247, 0.4), inset 0 2px 15px rgba(255, 255, 255, 0.2);
         }
 
         .tube.completed {
-            border-color: #00ff00;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+            border-color: #5dd66a;
+            box-shadow: 0 0 25px rgba(93, 214, 106, 0.5), 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: completedPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes completedPulse {
+            0%, 100% { box-shadow: 0 0 25px rgba(93, 214, 106, 0.5), 0 8px 32px rgba(0, 0, 0, 0.3); }
+            50% { box-shadow: 0 0 35px rgba(93, 214, 106, 0.7), 0 8px 32px rgba(0, 0, 0, 0.3); }
         }
 
         .liquid {
@@ -101,7 +120,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.5s cubic-bezier(0.68, 0, 0.26, 1);
             border-radius: 0 0 20px 20px;
         }
 
@@ -112,8 +131,42 @@
             left: 0;
             right: 0;
             height: 10px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
+            animation: surfaceWave 3s ease-in-out infinite;
+        }
+
+        @keyframes surfaceWave {
+            0%, 100% { transform: scaleX(1); opacity: 0.3; }
+            50% { transform: scaleX(1.05); opacity: 0.4; }
+        }
+
+        .liquid-surface {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        .pour-particle {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .win-particle {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
         }
 
         .controls {
@@ -257,12 +310,12 @@
 
     <script>
         const COLORS = [
-            { name: 'neon-pink', value: '#ff0080', glow: 'rgba(255, 0, 128, 0.6)' },
-            { name: 'neon-blue', value: '#00ffff', glow: 'rgba(0, 255, 255, 0.6)' },
-            { name: 'neon-green', value: '#00ff00', glow: 'rgba(0, 255, 0, 0.6)' },
-            { name: 'neon-purple', value: '#bf00ff', glow: 'rgba(191, 0, 255, 0.6)' },
-            { name: 'neon-orange', value: '#ff8000', glow: 'rgba(255, 128, 0, 0.6)' },
-            { name: 'neon-yellow', value: '#ffff00', glow: 'rgba(255, 255, 0, 0.6)' }
+            { name: 'pink', value: '#ff6b9d', glow: 'rgba(255, 107, 157, 0.4)' },
+            { name: 'blue', value: '#4ec5f7', glow: 'rgba(78, 197, 247, 0.4)' },
+            { name: 'green', value: '#5dd66a', glow: 'rgba(93, 214, 106, 0.4)' },
+            { name: 'purple', value: '#c77dff', glow: 'rgba(199, 125, 255, 0.4)' },
+            { name: 'orange', value: '#ffa06b', glow: 'rgba(255, 160, 107, 0.4)' },
+            { name: 'yellow', value: '#ffe66d', glow: 'rgba(255, 230, 109, 0.4)' }
         ];
 
         const LEVELS = [
@@ -280,12 +333,14 @@
         let selectedTube = null;
         let tubes = [];
         let isAnimating = false;
+        let particles = [];
 
         function init() {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js').catch(() => {});
             }
             loadLevel(currentLevel);
+            animateParticles();
         }
 
         function generateLevel(levelIndex) {
@@ -358,18 +413,45 @@
                 const totalHeight = tubeEl.clientHeight || 200;
                 const liquidHeight = totalHeight / capacity;
                 
-                tube.forEach((color, liquidIndex) => {
+                let currentBottom = 0;
+                let i = 0;
+                while (i < tube.length) {
+                    const color = tube[i];
+                    let stackSize = 1;
+                    
+                    while (i + stackSize < tube.length && tube[i + stackSize].name === color.name) {
+                        stackSize++;
+                    }
+                    
                     const liquidEl = document.createElement('div');
                     liquidEl.className = 'liquid';
-                    liquidEl.style.height = `${liquidHeight}px`;
-                    liquidEl.style.bottom = `${liquidIndex * liquidHeight}px`;
+                    liquidEl.style.height = `${stackSize * liquidHeight}px`;
+                    liquidEl.style.bottom = `${currentBottom}px`;
                     liquidEl.style.backgroundColor = color.value;
-                    liquidEl.style.boxShadow = `0 0 15px ${color.glow}`;
+                    liquidEl.style.boxShadow = `0 0 20px ${color.glow}, inset 0 0 10px ${color.glow}`;
+                    
+                    const surfaceEl = document.createElement('div');
+                    surfaceEl.className = 'liquid-surface';
+                    surfaceEl.style.backgroundColor = adjustBrightness(color.value, 20);
+                    liquidEl.appendChild(surfaceEl);
+                    
                     tubeEl.appendChild(liquidEl);
-                });
+                    
+                    currentBottom += stackSize * liquidHeight;
+                    i += stackSize;
+                }
                 
                 container.appendChild(tubeEl);
             });
+        }
+
+        function adjustBrightness(hex, percent) {
+            const num = parseInt(hex.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = Math.min(255, (num >> 16) + amt);
+            const G = Math.min(255, ((num >> 8) & 0x00FF) + amt);
+            const B = Math.min(255, (num & 0x0000FF) + amt);
+            return `rgb(${R}, ${G}, ${B})`;
         }
 
         function isTubeComplete(tube) {
@@ -397,19 +479,45 @@
             const fromTube = tubes[fromIndex];
             const toTube = tubes[toIndex];
             
+            if (fromTube.length === 0) {
+                selectedTube = null;
+                renderTubes();
+                return;
+            }
+            
             if (toTube.length >= capacity) {
                 selectedTube = null;
                 renderTubes();
                 return;
             }
             
-            const liquidToPour = fromTube[fromTube.length - 1];
+            const liquidColor = fromTube[fromTube.length - 1];
             
-            if (toTube.length === 0 || toTube[toTube.length - 1].name === liquidToPour.name) {
+            if (toTube.length === 0 || toTube[toTube.length - 1].name === liquidColor.name) {
+                let amountToPour = 0;
+                const availableSpace = capacity - toTube.length;
+                
+                for (let i = fromTube.length - 1; i >= 0; i--) {
+                    if (fromTube[i].name !== liquidColor.name) break;
+                    amountToPour++;
+                }
+                
+                amountToPour = Math.min(amountToPour, availableSpace);
+                
+                if (amountToPour === 0) {
+                    selectedTube = null;
+                    renderTubes();
+                    return;
+                }
+                
                 isAnimating = true;
                 
-                fromTube.pop();
-                toTube.push(liquidToPour);
+                createPourEffect(fromIndex, toIndex, liquidColor, amountToPour);
+                
+                for (let i = 0; i < amountToPour; i++) {
+                    fromTube.pop();
+                    toTube.push(liquidColor);
+                }
                 
                 selectedTube = null;
                 renderTubes();
@@ -417,10 +525,39 @@
                 setTimeout(() => {
                     isAnimating = false;
                     checkWin();
-                }, 400);
+                }, 500);
             } else {
                 selectedTube = null;
                 renderTubes();
+            }
+        }
+
+        function createPourEffect(fromIndex, toIndex, color, amount) {
+            const tubes = document.querySelectorAll('.tube');
+            if (fromIndex >= tubes.length || toIndex >= tubes.length) return;
+            
+            const fromRect = tubes[fromIndex].getBoundingClientRect();
+            const toRect = tubes[toIndex].getBoundingClientRect();
+            
+            for (let i = 0; i < amount * 3; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'pour-particle';
+                    particle.style.backgroundColor = color.value;
+                    particle.style.boxShadow = `0 0 10px ${color.glow}`;
+                    particle.style.left = `${fromRect.left + fromRect.width / 2 - 5}px`;
+                    particle.style.top = `${fromRect.top + 20}px`;
+                    document.body.appendChild(particle);
+                    
+                    const deltaX = (toRect.left + toRect.width / 2) - (fromRect.left + fromRect.width / 2);
+                    const deltaY = (toRect.top + toRect.height - 30) - (fromRect.top + 20);
+                    
+                    particle.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                    particle.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.5)`;
+                    particle.style.opacity = '0';
+                    
+                    setTimeout(() => particle.remove(), 500);
+                }, i * 50);
             }
         }
 
@@ -430,9 +567,40 @@
             );
             
             if (allComplete && tubes.some(tube => tube.length > 0)) {
+                createWinEffect();
                 showMessage('Победа!', 'Уровень пройден! 🎉');
                 document.getElementById('nextBtn').style.display = 'inline-block';
             }
+        }
+
+        function createWinEffect() {
+            const tubes = document.querySelectorAll('.tube');
+            tubes.forEach((tube, index) => {
+                if (isTubeComplete(tubes[index])) {
+                    const rect = tube.getBoundingClientRect();
+                    for (let i = 0; i < 20; i++) {
+                        setTimeout(() => {
+                            const particle = document.createElement('div');
+                            particle.className = 'win-particle';
+                            particle.style.left = `${rect.left + Math.random() * rect.width}px`;
+                            particle.style.top = `${rect.top + Math.random() * rect.height}px`;
+                            particle.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 60%)`;
+                            document.body.appendChild(particle);
+                            
+                            const angle = Math.random() * Math.PI * 2;
+                            const distance = 50 + Math.random() * 100;
+                            const tx = Math.cos(angle) * distance;
+                            const ty = Math.sin(angle) * distance;
+                            
+                            particle.style.transition = 'all 0.8s ease-out';
+                            particle.style.transform = `translate(${tx}px, ${ty}px) rotate(${Math.random() * 360}deg)`;
+                            particle.style.opacity = '0';
+                            
+                            setTimeout(() => particle.remove(), 800);
+                        }, i * 30);
+                    }
+                }
+            });
         }
 
         function useHint() {
@@ -444,15 +612,34 @@
                 document.getElementById('hintsLeft').textContent = hints;
                 
                 isAnimating = true;
-                tubes[hint.from].pop();
-                tubes[hint.to].push(COLORS.find(c => c.name === hint.colorName));
+                
+                const fromTube = tubes[hint.from];
+                const toTube = tubes[hint.to];
+                const liquidColor = fromTube[fromTube.length - 1];
+                
+                let amountToPour = 0;
+                const availableSpace = capacity - toTube.length;
+                
+                for (let i = fromTube.length - 1; i >= 0; i--) {
+                    if (fromTube[i].name !== liquidColor.name) break;
+                    amountToPour++;
+                }
+                
+                amountToPour = Math.min(amountToPour, availableSpace);
+                
+                createPourEffect(hint.from, hint.to, liquidColor, amountToPour);
+                
+                for (let i = 0; i < amountToPour; i++) {
+                    fromTube.pop();
+                    toTube.push(liquidColor);
+                }
                 
                 renderTubes();
                 
                 setTimeout(() => {
                     isAnimating = false;
                     checkWin();
-                }, 400);
+                }, 500);
             } else {
                 showMessage('Нет подсказок', 'Попробуйте другой ход!');
             }
@@ -473,21 +660,6 @@
                     if (tubes[to].length >= capacity) continue;
                     
                     if (tubes[to].length === 0 || tubes[to][tubes[to].length - 1].name === liquid.name) {
-                        const targetTube = tubes[to];
-                        let canPourMore = true;
-                        
-                        for (let i = tubes[from].length - 2; i >= 0 && canPourMore; i--) {
-                            if (tubes[from][i].name === liquid.name && targetTube.length < capacity) {
-                                targetTube.push(liquid);
-                            } else {
-                                canPourMore = false;
-                            }
-                        }
-                        
-                        while (targetTube.length > tubes[to].length) {
-                            targetTube.pop();
-                        }
-                        
                         return { from, to, colorName: liquid.name };
                     }
                 }
@@ -521,6 +693,15 @@
         function closeMessage() {
             document.getElementById('message').classList.remove('show');
             document.getElementById('overlay').classList.remove('show');
+        }
+
+        function animateParticles() {
+            const bgParticles = document.querySelectorAll('.bg-particle');
+            bgParticles.forEach(p => {
+                const duration = 20 + Math.random() * 30;
+                p.style.animationDuration = `${duration}s`;
+            });
+            requestAnimationFrame(animateParticles);
         }
 
         window.addEventListener('resize', renderTubes);
