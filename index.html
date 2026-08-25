@@ -20,7 +20,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -34,18 +34,18 @@
             font-size: clamp(1.5rem, 4vw, 2.5rem);
             text-align: center;
             margin-bottom: 20px;
-            text-shadow: 0 0 20px rgba(255, 0, 128, 0.5),
-                         0 0 40px rgba(0, 255, 255, 0.3);
-            background: linear-gradient(90deg, #ff0080, #00ffff, #ff0080);
+            text-shadow: 0 0 30px rgba(100, 181, 246, 0.4);
+            background: linear-gradient(90deg, #64b5f6, #81c784, #64b5f6);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            animation: glow 3s ease-in-out infinite;
+            animation: glow 4s ease-in-out infinite;
+            letter-spacing: 2px;
         }
 
         @keyframes glow {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.3); }
+            0%, 100% { filter: brightness(1); transform: scale(1); }
+            50% { filter: brightness(1.15); transform: scale(1.02); }
         }
 
         .game-container {
@@ -61,23 +61,23 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: clamp(15px, 3vw, 30px);
+            gap: clamp(20px, 4vw, 40px);
             padding: 20px;
         }
 
         .tube {
-            width: clamp(50px, 12vw, 80px);
-            height: clamp(150px, 35vw, 250px);
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            width: clamp(55px, 12vw, 85px);
+            height: clamp(160px, 35vw, 260px);
+            border: 3px solid rgba(255, 255, 255, 0.25);
             border-top: none;
             border-radius: 0 0 25px 25px;
             position: relative;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
-            backdrop-filter: blur(5px);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(8px);
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 2px 10px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 2px 15px rgba(255, 255, 255, 0.08);
         }
 
         .tube::before {
@@ -87,32 +87,38 @@
             left: 10%;
             right: 10%;
             height: 60%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
             border-radius: 50%;
             pointer-events: none;
         }
 
         .tube:hover {
-            border-color: rgba(255, 255, 255, 0.7);
-            box-shadow: 0 0 25px rgba(78, 197, 247, 0.4), 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 2px 10px rgba(255, 255, 255, 0.15);
-            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 30px rgba(100, 181, 246, 0.35), 0 12px 45px rgba(0, 0, 0, 0.5), inset 0 2px 15px rgba(255, 255, 255, 0.12);
+            transform: translateY(-4px);
         }
 
         .tube.selected {
-            transform: translateY(-25px) scale(1.05);
-            border-color: #4ec5f7;
-            box-shadow: 0 0 35px rgba(78, 197, 247, 0.7), 0 10px 40px rgba(78, 197, 247, 0.4), inset 0 2px 15px rgba(255, 255, 255, 0.2);
+            transform: translateY(-20px) scale(1.03);
+            border-color: #64b5f6;
+            box-shadow: 0 0 40px rgba(100, 181, 246, 0.6), 0 15px 50px rgba(100, 181, 246, 0.3), inset 0 2px 20px rgba(255, 255, 255, 0.15);
+            animation: selectedPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes selectedPulse {
+            0%, 100% { box-shadow: 0 0 40px rgba(100, 181, 246, 0.6), 0 15px 50px rgba(100, 181, 246, 0.3), inset 0 2px 20px rgba(255, 255, 255, 0.15); }
+            50% { box-shadow: 0 0 55px rgba(100, 181, 246, 0.75), 0 18px 55px rgba(100, 181, 246, 0.4), inset 0 2px 25px rgba(255, 255, 255, 0.2); }
         }
 
         .tube.completed {
-            border-color: #5dd66a;
-            box-shadow: 0 0 25px rgba(93, 214, 106, 0.5), 0 8px 32px rgba(0, 0, 0, 0.3);
-            animation: completedPulse 2s ease-in-out infinite;
+            border-color: #81c784;
+            box-shadow: 0 0 30px rgba(129, 199, 132, 0.45), 0 10px 40px rgba(0, 0, 0, 0.4);
+            animation: completedPulse 2.5s ease-in-out infinite;
         }
 
         @keyframes completedPulse {
-            0%, 100% { box-shadow: 0 0 25px rgba(93, 214, 106, 0.5), 0 8px 32px rgba(0, 0, 0, 0.3); }
-            50% { box-shadow: 0 0 35px rgba(93, 214, 106, 0.7), 0 8px 32px rgba(0, 0, 0, 0.3); }
+            0%, 100% { box-shadow: 0 0 30px rgba(129, 199, 132, 0.45), 0 10px 40px rgba(0, 0, 0, 0.4); }
+            50% { box-shadow: 0 0 45px rgba(129, 199, 132, 0.6), 0 10px 40px rgba(0, 0, 0, 0.4); }
         }
 
         .liquid {
@@ -120,7 +126,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            transition: all 0.5s cubic-bezier(0.68, 0, 0.26, 1);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 0 0 20px 20px;
         }
 
@@ -130,15 +136,15 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.3);
+            height: 8px;
+            background: rgba(255, 255, 255, 0.25);
             border-radius: 50%;
-            animation: surfaceWave 3s ease-in-out infinite;
+            animation: surfaceWave 3.5s ease-in-out infinite;
         }
 
         @keyframes surfaceWave {
-            0%, 100% { transform: scaleX(1); opacity: 0.3; }
-            50% { transform: scaleX(1.05); opacity: 0.4; }
+            0%, 100% { transform: scaleX(1); opacity: 0.25; }
+            50% { transform: scaleX(1.07); opacity: 0.35; }
         }
 
         .liquid-surface {
@@ -146,15 +152,15 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 8px;
+            height: 6px;
             border-radius: 50%;
-            opacity: 0.6;
+            opacity: 0.5;
         }
 
         .pour-particle {
             position: fixed;
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             pointer-events: none;
             z-index: 1000;
@@ -162,8 +168,8 @@
 
         .win-particle {
             position: fixed;
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             pointer-events: none;
             z-index: 1000;
@@ -177,72 +183,65 @@
         }
 
         .btn {
-            padding: 12px 25px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.1);
+            padding: 14px 30px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.08);
             color: #fff;
-            border-radius: 25px;
+            border-radius: 30px;
             cursor: pointer;
             font-size: 1rem;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(8px);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            font-weight: 500;
         }
 
         .btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: #fff;
-            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         .btn:active {
-            transform: scale(0.95);
-        }
-
-        .btn-hint {
-            border-color: #ffd700;
-            background: rgba(255, 215, 0, 0.2);
-        }
-
-        .btn-hint:hover {
-            background: rgba(255, 215, 0, 0.3);
-            border-color: #ffd700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-        }
-
-        .btn-hint:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            transform: none;
+            transform: translateY(0) scale(0.97);
         }
 
         .message {
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            background: rgba(10, 10, 26, 0.95);
-            padding: 40px 60px;
-            border-radius: 20px;
-            border: 2px solid rgba(0, 255, 255, 0.5);
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(26, 26, 46, 0.97);
+            padding: 45px 65px;
+            border-radius: 25px;
+            border: 2px solid rgba(100, 181, 246, 0.4);
             text-align: center;
             z-index: 1000;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(15px);
+            opacity: 0;
         }
 
         .message.show {
             transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
         }
 
         .message h2 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin-bottom: 20px;
-            background: linear-gradient(90deg, #00ff00, #00ffff);
+            background: linear-gradient(90deg, #81c784, #64b5f6);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
         }
 
         .overlay {
@@ -251,22 +250,16 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             z-index: 999;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease;
         }
 
         .overlay.show {
             opacity: 1;
             pointer-events: auto;
-        }
-
-        .level-indicator {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 10px;
         }
 
         @media (max-width: 600px) {
@@ -275,11 +268,11 @@
             }
             
             .controls {
-                gap: 10px;
+                gap: 12px;
             }
             
             .btn {
-                padding: 10px 20px;
+                padding: 12px 24px;
                 font-size: 0.9rem;
             }
         }
@@ -289,23 +282,19 @@
     <h1>✨ Liquid Sort ✨</h1>
     
     <div class="game-container">
-        <div class="level-indicator" id="levelIndicator">Level 1</div>
-        
         <div class="tubes-container" id="tubesContainer"></div>
         
         <div class="controls">
-            <button class="btn btn-hint" id="hintBtn" onclick="useHint()">💡 Подсказка (<span id="hintsLeft">3</span>)</button>
             <button class="btn" onclick="resetLevel()">🔄 Заново</button>
-            <button class="btn" onclick="nextLevel()" id="nextBtn" style="display: none;">➡️ Далее</button>
         </div>
     </div>
 
     <div class="overlay" id="overlay" onclick="closeMessage()"></div>
     <div class="message" id="message">
         <h2 id="messageTitle">Победа!</h2>
-        <p id="messageText">Уровень пройден!</p>
+        <p id="messageText">Уровень пройден! 🎉</p>
         <br>
-        <button class="btn" onclick="nextLevel()">Продолжить</button>
+        <button class="btn" onclick="resetLevel()">Играть снова</button>
     </div>
 
     <script>
@@ -318,18 +307,11 @@
             { name: 'yellow', value: '#ffe66d', glow: 'rgba(255, 230, 109, 0.4)' }
         ];
 
-        const LEVELS = [
-            { tubes: 4, colors: 2, difficulty: 1 },
-            { tubes: 5, colors: 3, difficulty: 1.5 },
-            { tubes: 6, colors: 3, difficulty: 2 },
-            { tubes: 7, colors: 4, difficulty: 2.5 },
-            { tubes: 8, colors: 4, difficulty: 3 },
-            { tubes: 9, colors: 5, difficulty: 3.5 },
-            { tubes: 10, colors: 5, difficulty: 4 }
-        ];
+        // Средний уровень сложности: 6 пробирок, 4 цвета
+        const NUM_TUBES = 6;
+        const NUM_COLORS = 4;
+        const CAPACITY = 4;
 
-        let currentLevel = 0;
-        let hints = 3;
         let selectedTube = null;
         let tubes = [];
         let isAnimating = false;
@@ -339,15 +321,14 @@
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js').catch(() => {});
             }
-            loadLevel(currentLevel);
+            loadLevel();
             animateParticles();
         }
 
-        function generateLevel(levelIndex) {
-            const config = LEVELS[Math.min(levelIndex, LEVELS.length - 1)];
-            const numTubes = config.tubes;
-            const numColors = config.colors;
-            const capacity = 4;
+        function generateLevel() {
+            const numTubes = NUM_TUBES;
+            const numColors = NUM_COLORS;
+            const capacity = CAPACITY;
             
             const selectedColors = COLORS.slice(0, numColors);
             let liquids = [];
@@ -358,22 +339,42 @@
                 }
             });
             
-            liquids = shuffleArray(liquids);
+            // Перемешиваем и генерируем решаемую комбинацию
+            let newTubes;
+            let attempts = 0;
+            do {
+                liquids = shuffleArray([...liquids]);
+                newTubes = Array(numTubes).fill(null).map(() => []);
+                
+                // Заполняем все пробирки кроме двух пустых
+                let index = 0;
+                for (let i = 0; i < numTubes - 2; i++) {
+                    for (let j = 0; j < capacity; j++) {
+                        if (index < liquids.length) {
+                            newTubes[i].push(liquids[index++]);
+                        }
+                    }
+                }
+                attempts++;
+            } while (!isSolvable(newTubes, capacity) && attempts < 100);
             
-            let newTubes = Array(numTubes).fill(null).map(() => []);
-            
-            let emptyTubes = 2;
-            let index = 0;
-            
-            for (let i = 0; i < numTubes - emptyTubes; i++) {
-                for (let j = 0; j < capacity; j++) {
-                    if (index < liquids.length) {
-                        newTubes[i].push(liquids[index++]);
+            return { tubes: newTubes, capacity };
+        }
+
+        function isSolvable(tubesState, capacity) {
+            // Простая проверка: есть ли хотя бы один возможный ход
+            for (let from = 0; from < tubesState.length; from++) {
+                if (tubesState[from].length === 0) continue;
+                const liquid = tubesState[from][tubesState[from].length - 1];
+                for (let to = 0; to < tubesState.length; to++) {
+                    if (from === to) continue;
+                    if (tubesState[to].length >= capacity) continue;
+                    if (tubesState[to].length === 0 || tubesState[to][tubesState[to].length - 1].name === liquid.name) {
+                        return true;
                     }
                 }
             }
-            
-            return { tubes: newTubes, capacity };
+            return false;
         }
 
         function shuffleArray(array) {
@@ -385,15 +386,12 @@
             return newArray;
         }
 
-        function loadLevel(levelIndex) {
-            const levelData = generateLevel(levelIndex);
+        function loadLevel() {
+            const levelData = generateLevel();
             tubes = levelData.tubes.map(tube => [...tube]);
             capacity = levelData.capacity;
             selectedTube = null;
             isAnimating = false;
-            
-            document.getElementById('levelIndicator').textContent = `Level ${levelIndex + 1}`;
-            document.getElementById('nextBtn').style.display = 'none';
             
             renderTubes();
         }
@@ -569,7 +567,6 @@
             if (allComplete && tubes.some(tube => tube.length > 0)) {
                 createWinEffect();
                 showMessage('Победа!', 'Уровень пройден! 🎉');
-                document.getElementById('nextBtn').style.display = 'inline-block';
             }
         }
 
@@ -603,84 +600,8 @@
             });
         }
 
-        function useHint() {
-            if (hints <= 0 || isAnimating) return;
-            
-            const hint = findHint();
-            if (hint) {
-                hints--;
-                document.getElementById('hintsLeft').textContent = hints;
-                
-                isAnimating = true;
-                
-                const fromTube = tubes[hint.from];
-                const toTube = tubes[hint.to];
-                const liquidColor = fromTube[fromTube.length - 1];
-                
-                let amountToPour = 0;
-                const availableSpace = capacity - toTube.length;
-                
-                for (let i = fromTube.length - 1; i >= 0; i--) {
-                    if (fromTube[i].name !== liquidColor.name) break;
-                    amountToPour++;
-                }
-                
-                amountToPour = Math.min(amountToPour, availableSpace);
-                
-                createPourEffect(hint.from, hint.to, liquidColor, amountToPour);
-                
-                for (let i = 0; i < amountToPour; i++) {
-                    fromTube.pop();
-                    toTube.push(liquidColor);
-                }
-                
-                renderTubes();
-                
-                setTimeout(() => {
-                    isAnimating = false;
-                    checkWin();
-                }, 500);
-            } else {
-                showMessage('Нет подсказок', 'Попробуйте другой ход!');
-            }
-            
-            if (hints === 0) {
-                document.getElementById('hintBtn').disabled = true;
-            }
-        }
-
-        function findHint() {
-            for (let from = 0; from < tubes.length; from++) {
-                if (tubes[from].length === 0) continue;
-                
-                const liquid = tubes[from][tubes[from].length - 1];
-                
-                for (let to = 0; to < tubes.length; to++) {
-                    if (from === to) continue;
-                    if (tubes[to].length >= capacity) continue;
-                    
-                    if (tubes[to].length === 0 || tubes[to][tubes[to].length - 1].name === liquid.name) {
-                        return { from, to, colorName: liquid.name };
-                    }
-                }
-            }
-            return null;
-        }
-
         function resetLevel() {
-            loadLevel(currentLevel);
-        }
-
-        function nextLevel() {
-            currentLevel++;
-            if (currentLevel >= LEVELS.length) {
-                currentLevel = 0;
-                hints = 3;
-                document.getElementById('hintsLeft').textContent = hints;
-                document.getElementById('hintBtn').disabled = false;
-            }
-            loadLevel(currentLevel);
-            closeMessage();
+            loadLevel();
         }
 
         function showMessage(title, text) {
