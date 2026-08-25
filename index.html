@@ -25,9 +25,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            justify-content: flex-start;
+            overflow-x: hidden;
+            overflow-y: auto;
             color: #fff;
+            padding: 20px 0;
         }
 
         h1 {
@@ -54,6 +56,7 @@
             align-items: center;
             gap: 30px;
             padding: 20px;
+            width: 100%;
             max-width: 100%;
         }
 
@@ -61,13 +64,15 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: clamp(20px, 4vw, 40px);
-            padding: 20px;
+            gap: clamp(15px, 3vw, 30px);
+            padding: 15px;
+            width: 100%;
+            max-width: 100%;
         }
 
         .tube {
-            width: clamp(55px, 12vw, 85px);
-            height: clamp(160px, 35vw, 260px);
+            width: clamp(45px, 10vw, 75px);
+            height: clamp(140px, 30vw, 220px);
             border: 3px solid rgba(255, 255, 255, 0.25);
             border-top: none;
             border-radius: 0 0 25px 25px;
@@ -78,6 +83,9 @@
             backdrop-filter: blur(8px);
             overflow: hidden;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 2px 15px rgba(255, 255, 255, 0.08);
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            user-select: none;
         }
 
         .tube::before {
@@ -99,15 +107,21 @@
         }
 
         .tube.selected {
-            transform: translateY(-20px) scale(1.03);
+            transform: translateY(-15px) scale(1.03);
             border-color: #64b5f6;
             box-shadow: 0 0 40px rgba(100, 181, 246, 0.6), 0 15px 50px rgba(100, 181, 246, 0.3), inset 0 2px 20px rgba(255, 255, 255, 0.15);
             animation: selectedPulse 1.5s ease-in-out infinite;
         }
 
         @keyframes selectedPulse {
-            0%, 100% { box-shadow: 0 0 40px rgba(100, 181, 246, 0.6), 0 15px 50px rgba(100, 181, 246, 0.3), inset 0 2px 20px rgba(255, 255, 255, 0.15); }
-            50% { box-shadow: 0 0 55px rgba(100, 181, 246, 0.75), 0 18px 55px rgba(100, 181, 246, 0.4), inset 0 2px 25px rgba(255, 255, 255, 0.2); }
+            0%, 100% { 
+                transform: translateY(-15px) scale(1.03);
+                box-shadow: 0 0 40px rgba(100, 181, 246, 0.6), 0 15px 50px rgba(100, 181, 246, 0.3), inset 0 2px 20px rgba(255, 255, 255, 0.15); 
+            }
+            50% { 
+                transform: translateY(-18px) scale(1.04);
+                box-shadow: 0 0 55px rgba(100, 181, 246, 0.75), 0 18px 55px rgba(100, 181, 246, 0.4), inset 0 2px 25px rgba(255, 255, 255, 0.2); 
+            }
         }
 
         .tube.completed {
@@ -126,8 +140,9 @@
             bottom: 0;
             left: 0;
             right: 0;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 0 0 20px 20px;
+            will-change: height, bottom;
         }
 
         .liquid::before {
@@ -265,6 +280,12 @@
         @media (max-width: 600px) {
             .game-container {
                 gap: 20px;
+                padding: 15px;
+            }
+            
+            .tubes-container {
+                gap: clamp(10px, 2vw, 20px);
+                padding: 10px;
             }
             
             .controls {
@@ -274,6 +295,10 @@
             .btn {
                 padding: 12px 24px;
                 font-size: 0.9rem;
+            }
+            
+            h1 {
+                margin-bottom: 15px;
             }
         }
     </style>
@@ -403,10 +428,16 @@
             tubes.forEach((tube, index) => {
                 const tubeEl = document.createElement('div');
                 tubeEl.className = 'tube';
+                tubeEl.dataset.index = index;
                 if (selectedTube === index) tubeEl.classList.add('selected');
                 if (isTubeComplete(tube)) tubeEl.classList.add('completed');
                 
-                tubeEl.onclick = () => handleTubeClick(index);
+                // Use touchstart for mobile, click for desktop
+                tubeEl.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleTubeClick(index);
+                }, { passive: false });
                 
                 const totalHeight = tubeEl.clientHeight || 200;
                 const liquidHeight = totalHeight / capacity;
@@ -473,6 +504,13 @@
             }
         }
 
+        // Prevent default touch behavior
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.classList.contains('tube')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
         function tryPour(fromIndex, toIndex) {
             const fromTube = tubes[fromIndex];
             const toTube = tubes[toIndex];
@@ -512,18 +550,24 @@
                 
                 createPourEffect(fromIndex, toIndex, liquidColor, amountToPour);
                 
-                for (let i = 0; i < amountToPour; i++) {
-                    fromTube.pop();
-                    toTube.push(liquidColor);
-                }
-                
-                selectedTube = null;
-                renderTubes();
-                
-                setTimeout(() => {
-                    isAnimating = false;
-                    checkWin();
-                }, 500);
+                // Animate the pour with staggered delays for each unit
+                let pouredCount = 0;
+                const pourInterval = setInterval(() => {
+                    if (pouredCount < amountToPour) {
+                        fromTube.pop();
+                        toTube.push(liquidColor);
+                        pouredCount++;
+                        renderTubes();
+                    } else {
+                        clearInterval(pourInterval);
+                        selectedTube = null;
+                        
+                        setTimeout(() => {
+                            isAnimating = false;
+                            checkWin();
+                        }, 300);
+                    }
+                }, 150);
             } else {
                 selectedTube = null;
                 renderTubes();
@@ -531,31 +575,54 @@
         }
 
         function createPourEffect(fromIndex, toIndex, color, amount) {
-            const tubes = document.querySelectorAll('.tube');
-            if (fromIndex >= tubes.length || toIndex >= tubes.length) return;
+            const tubeElements = document.querySelectorAll('.tube');
+            if (fromIndex >= tubeElements.length || toIndex >= tubeElements.length) return;
             
-            const fromRect = tubes[fromIndex].getBoundingClientRect();
-            const toRect = tubes[toIndex].getBoundingClientRect();
+            const fromRect = tubeElements[fromIndex].getBoundingClientRect();
+            const toRect = tubeElements[toIndex].getBoundingClientRect();
             
-            for (let i = 0; i < amount * 3; i++) {
+            for (let i = 0; i < amount * 4; i++) {
                 setTimeout(() => {
                     const particle = document.createElement('div');
                     particle.className = 'pour-particle';
                     particle.style.backgroundColor = color.value;
                     particle.style.boxShadow = `0 0 10px ${color.glow}`;
-                    particle.style.left = `${fromRect.left + fromRect.width / 2 - 5}px`;
+                    particle.style.left = `${fromRect.left + fromRect.width / 2 - 6}px`;
                     particle.style.top = `${fromRect.top + 20}px`;
                     document.body.appendChild(particle);
                     
                     const deltaX = (toRect.left + toRect.width / 2) - (fromRect.left + fromRect.width / 2);
                     const deltaY = (toRect.top + toRect.height - 30) - (fromRect.top + 20);
                     
-                    particle.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-                    particle.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.5)`;
-                    particle.style.opacity = '0';
+                    // Add arc to the particle motion
+                    const arcHeight = 30 + Math.random() * 20;
+                    particle.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
                     
-                    setTimeout(() => particle.remove(), 500);
-                }, i * 50);
+                    // Animate with arc
+                    const startTime = Date.now();
+                    const duration = 600;
+                    
+                    const animateParticle = () => {
+                        const elapsed = Date.now() - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        
+                        const currentX = deltaX * progress;
+                        const currentY = deltaY * progress - Math.sin(progress * Math.PI) * arcHeight;
+                        const scale = 1 - progress * 0.5;
+                        const opacity = 1 - progress;
+                        
+                        particle.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
+                        particle.style.opacity = opacity;
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(animateParticle);
+                        } else {
+                            particle.remove();
+                        }
+                    };
+                    
+                    requestAnimationFrame(animateParticle);
+                }, i * 40);
             }
         }
 
@@ -571,17 +638,18 @@
         }
 
         function createWinEffect() {
-            const tubes = document.querySelectorAll('.tube');
-            tubes.forEach((tube, index) => {
+            const tubeElements = document.querySelectorAll('.tube');
+            tubeElements.forEach((tube, index) => {
                 if (isTubeComplete(tubes[index])) {
                     const rect = tube.getBoundingClientRect();
-                    for (let i = 0; i < 20; i++) {
+                    for (let i = 0; i < 30; i++) {
                         setTimeout(() => {
                             const particle = document.createElement('div');
                             particle.className = 'win-particle';
                             particle.style.left = `${rect.left + Math.random() * rect.width}px`;
                             particle.style.top = `${rect.top + Math.random() * rect.height}px`;
                             particle.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 60%)`;
+                            particle.style.boxShadow = `0 0 15px hsla(${Math.random() * 360}, 80%, 60%, 0.6)`;
                             document.body.appendChild(particle);
                             
                             const angle = Math.random() * Math.PI * 2;
@@ -589,12 +657,32 @@
                             const tx = Math.cos(angle) * distance;
                             const ty = Math.sin(angle) * distance;
                             
-                            particle.style.transition = 'all 0.8s ease-out';
-                            particle.style.transform = `translate(${tx}px, ${ty}px) rotate(${Math.random() * 360}deg)`;
-                            particle.style.opacity = '0';
+                            // Animate with gravity effect
+                            const startTime = Date.now();
+                            const duration = 800;
                             
-                            setTimeout(() => particle.remove(), 800);
-                        }, i * 30);
+                            const animateParticle = () => {
+                                const elapsed = Date.now() - startTime;
+                                const progress = Math.min(elapsed / duration, 1);
+                                
+                                const currentTx = tx * progress;
+                                const currentTy = ty * progress + Math.pow(progress, 2) * 50; // gravity
+                                const rotation = progress * Math.random() * 360;
+                                const scale = 1 - progress * 0.3;
+                                const opacity = 1 - progress;
+                                
+                                particle.style.transform = `translate(${currentTx}px, ${currentTy}px) rotate(${rotation}deg) scale(${scale})`;
+                                particle.style.opacity = opacity;
+                                
+                                if (progress < 1) {
+                                    requestAnimationFrame(animateParticle);
+                                } else {
+                                    particle.remove();
+                                }
+                            };
+                            
+                            requestAnimationFrame(animateParticle);
+                        }, i * 25);
                     }
                 }
             });
