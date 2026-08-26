@@ -121,12 +121,12 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-end;
-  gap: clamp(4px, 1.1vw, 8px);
-  padding: 14px 12px;
+  gap: clamp(10px, 2.6vw, 18px);
+  padding: 18px 12px;
 }
 
 .tubes-container.dense {
-  gap: clamp(4px, 1.1vw, 8px);
+  gap: clamp(10px, 2.6vw, 18px);
 }
 
 .tube-wrapper {
@@ -215,8 +215,8 @@ body {
 }
 
 .tube {
-  width: clamp(28px, 8.2vw, 60px);
-  height: clamp(115px, 32vw, 230px);
+  width: clamp(50px, 14vw, 84px);
+  height: clamp(150px, 42vw, 290px);
   position: relative;
   background:
     radial-gradient(ellipse 70% 22% at 50% 0%, rgba(255, 255, 255, calc(var(--glass-hi) * 0.6)) 0%, rgba(255, 255, 255, 0) 60%),
