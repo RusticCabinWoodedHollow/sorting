@@ -28,7 +28,7 @@ function App() {
   const effectKey = useRef(0);
 
   const startGame = useCallback(() => {
-    setTubes(generateLevel().level);
+    setTubes(generateLevel());
     setSelectedTube(null);
     setIsWon(false);
     setIsLost(false);
