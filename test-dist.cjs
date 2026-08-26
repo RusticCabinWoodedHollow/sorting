@@ -37,7 +37,7 @@ for (const f of files) {
   assert(fs.statSync(path.join(DIST, f)).size > 0, `file non-empty: ${f}`);
 }
 
-// 2. index.html: относительные пути
+// 2. index.html (в корне ветки build — это опубликованный файл): относительные пути
 const html = read('index.html');
 assert(html.includes('<div id="root">'), 'html has #root');
 assert(html.includes('./assets/index-BWy7h8Dn.js'), 'html references relative JS');
@@ -71,7 +71,7 @@ assert(wb.includes('cleanupOutdatedCaches'), 'workbox runtime present');
 const reg = read('registerSW.js');
 assert(reg.includes("navigator.serviceWorker.register"), 'registerSW.js registers SW');
 
-// 4. HTTP-тест через vite preview
+// 4. HTTP-тест через vite preview (отдаём КОРЕНЬ репо — как это делает хостинг ветки build)
 function httpGet(url) {
   return new Promise((resolve, reject) => {
     http.get(url, (res) => {
@@ -84,26 +84,32 @@ function httpGet(url) {
 
 async function testServer() {
   const { spawn } = require('child_process');
-  const preview = spawn(process.platform === 'win32' ? 'npx.cmd' : 'npx', ['vite', 'preview', '--port', '4199', '--strictPort'], {
-    cwd: __dirname,
-    stdio: 'ignore',
-    shell: process.platform === 'win32',
+  // vite preview без аргументов отдаёт dist/ — но нам нужен КОРЕНЬ (как на хостинге).
+  // Поэтому поднимем простой статический сервер на корне репо.
+  const server = http.createServer((req, res) => {
+    const urlPath = decodeURIComponent(req.url.split('?')[0]);
+    let filePath = urlPath === '/' ? 'index.html' : urlPath.replace(/^\/+/, '');
+    const abs = path.join(__dirname, filePath);
+    if (!abs.startsWith(__dirname)) { res.writeHead(403); res.end(); return; }
+    fs.readFile(abs, (err, data) => {
+      if (err) { res.writeHead(404); res.end('404'); return; }
+      const ext = path.extname(abs).toLowerCase();
+      const types = {
+        '.html': 'text/html; charset=utf-8',
+        '.js': 'text/javascript; charset=utf-8',
+        '.css': 'text/css; charset=utf-8',
+        '.json': 'application/json',
+        '.webmanifest': 'application/manifest+json',
+        '.svg': 'image/svg+xml',
+        '.png': 'image/png',
+        '.ico': 'image/x-icon',
+      };
+      res.writeHead(200, { 'Content-Type': types[ext] || 'application/octet-stream' });
+      res.end(data);
+    });
   });
-  // Ждём, пока сервер поднимется
-  let up = false;
-  for (let i = 0; i < 40; i++) {
-    await new Promise((r) => setTimeout(r, 500));
-    try {
-      const r = await httpGet('http://localhost:4199/');
-      if (r.status === 200) { up = true; break; }
-    } catch (_) {}
-  }
-  if (!up) {
-    preview.kill();
-    console.error('FAIL: vite preview did not start');
-    process.exit(1);
-  }
-  console.log('ok: vite preview is up on :4199');
+  await new Promise((r) => server.listen(4199, r));
+  console.log('ok: static server is up on :4199 (serving repo root, like the host does)');
 
   const endpoints = [
     '/',
@@ -121,12 +127,12 @@ async function testServer() {
     assert(r.body.length > 0, `GET ${ep} body non-empty (${r.body.length} bytes)`);
   }
 
-  // Проверяем, что HTML, который отдаёт сервер, тоже с относительными путями
+  // Проверяем, что HTML, который отдаёт сервер (корень), тоже с относительными путями
   const home = await httpGet('http://localhost:4199/');
   assert(home.body.includes('./assets/index-BWy7h8Dn.js'), 'served HTML uses relative JS path');
   assert(!/src="\/assets\//.test(home.body), 'served HTML has no absolute /assets/ paths');
 
-  preview.kill();
+  server.close();
   console.log('\nALL TESTS PASSED');
   process.exit(0);
 }
