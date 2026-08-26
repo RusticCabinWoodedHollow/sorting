@@ -16,42 +16,6 @@ const COLOR_CLASS = [
 ];
 const CONFETTI_COLORS = ['#4facfe', '#00f2fe', '#51cf66', '#ffd43b', '#da77f2', '#ffa94d', '#ff6b6b'];
 
-/* ---------- звук (WebAudio, без файлов) ---------- */
-let audioCtx = null;
-function ensureCtx() {
-  if (!audioCtx) {
-    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch { /* нет аудио — ок */ }
-  }
-  return audioCtx;
-}
-function playSound(type, enabled) {
-  if (!enabled) return;
-  const ctx = ensureCtx();
-  if (!ctx) return;
-  if (ctx.state === 'suspended') ctx.resume();
-  const t0 = ctx.currentTime;
-  const beep = (f0, f1, dur, wave = 'sine', vol = 0.15, delay = 0) => {
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.type = wave;
-    o.frequency.setValueAtTime(f0, t0 + delay);
-    o.frequency.exponentialRampToValueAtTime(Math.max(f1, 1), t0 + delay + dur);
-    g.gain.setValueAtTime(vol, t0 + delay);
-    g.gain.exponentialRampToValueAtTime(0.001, t0 + delay + dur);
-    o.connect(g);
-    g.connect(ctx.destination);
-    o.start(t0 + delay);
-    o.stop(t0 + delay + dur + 0.02);
-  };
-  switch (type) {
-    case 'pour':     beep(520, 170, 0.18, 'sine', 0.22); beep(320, 120, 0.12, 'sine', 0.1, 0.05); break;
-    case 'invalid':  beep(150, 90, 0.16, 'square', 0.07); break;
-    case 'complete': beep(660, 660, 0.09, 'sine', 0.16); beep(990, 990, 0.14, 'sine', 0.16, 0.08); break;
-    case 'win':      [523, 659, 784, 1047, 1319].forEach((f, i) => beep(f, f, 0.2, 'triangle', 0.18, i * 0.12)); break;
-    default: break;
-  }
-}
-
 function isSolved(level) {
   for (const tube of level) {
     if (tube.length === 0) continue;
@@ -113,11 +77,6 @@ function generateLevel(colors, tubesCount) {
   return level;
 }
 
-function readBest(levelId) {
-  const v = localStorage.getItem(`wsp_best_${levelId}`);
-  return v ? Number(v) : null;
-}
-
 function App() {
   const [levelId, setLevelId] = useState(() => {
     const saved = localStorage.getItem('wsp_level');
@@ -125,27 +84,21 @@ function App() {
   });
   const [tubes, setTubes] = useState([]);
   const [selectedTube, setSelectedTube] = useState(null);
-  const [moves, setMoves] = useState(0);
   const [isWon, setIsWon] = useState(false);
   const [isLost, setIsLost] = useState(false);
-  const [isRecord, setIsRecord] = useState(false);
   const [particles, setParticles] = useState([]);
   const [splash, setSplash] = useState(null); // {tube, key}
   const [shake, setShake] = useState(null);   // {tube, key}
   const [burst, setBurst] = useState(null);   // {tube, key}
-  const [soundOn, setSoundOn] = useState(() => localStorage.getItem('wsp_sound') !== '0');
   const effectKey = useRef(0);
 
   const level = LEVELS.find(l => l.id === levelId) || LEVELS[1];
-  const best = readBest(levelId);
 
   const startGame = useCallback((lv) => {
     setTubes(generateLevel(lv.colors, lv.tubes));
     setSelectedTube(null);
-    setMoves(0);
     setIsWon(false);
     setIsLost(false);
-    setIsRecord(false);
     setParticles([]);
     setSplash(null);
     setShake(null);
@@ -160,13 +113,6 @@ function App() {
     if (id === levelId) return;
     localStorage.setItem('wsp_level', id);
     setLevelId(id);
-  };
-
-  const toggleSound = () => {
-    setSoundOn(v => {
-      localStorage.setItem('wsp_sound', v ? '0' : '1');
-      return !v;
-    });
   };
 
   const createParticles = () => {
@@ -204,35 +150,24 @@ function App() {
         if (idx === tubeIndex) return [...tube, ...moved];
         return tube;
       });
-      const nm = moves + 1;
       setTubes(newTubes);
-      setMoves(nm);
       setSelectedTube(null); // фокус снимается сразу после перелива
-      playSound('pour', soundOn);
       setSplash({ tube: tubeIndex, key: ++effectKey.current });
 
       const dest = newTubes[tubeIndex];
       if (dest.length === TUBE_CAPACITY && dest.every(c => c === dest[0])) {
         setBurst({ tube: tubeIndex, key: ++effectKey.current });
-        playSound('complete', soundOn);
       }
 
       if (isSolved(newTubes)) {
         setIsWon(true);
         createParticles();
-        playSound('win', soundOn);
-        if (best === null || nm < best) {
-          setIsRecord(true);
-          localStorage.setItem(`wsp_best_${levelId}`, String(nm));
-        }
       } else if (checkLoss(newTubes)) {
         setIsLost(true);
-        playSound('invalid', soundOn);
       }
     } else {
-      // незаконный ход: тряска, звук, и (если колба не пустая) выбор переходит на неё
+      // незаконный ход: тряска, и (если колба не пустая) выбор переходит на неё
       setShake({ tube: tubeIndex, key: ++effectKey.current });
-      playSound('invalid', soundOn);
       if (tubes[tubeIndex].length > 0) setSelectedTube(tubeIndex);
     }
   };
@@ -268,21 +203,6 @@ function App() {
 
       <div className="game-header">
         <h1 className="game-title">Water Sort</h1>
-        <div className="game-stats">
-          <div className="stat-item">
-            <span>Ходы:</span>
-            <span className="stat-value">{moves}</span>
-          </div>
-          {best !== null && (
-            <div className="stat-item">
-              <span>Рекорд:</span>
-              <span className="stat-value">{best}</span>
-            </div>
-          )}
-          <button className="icon-btn" onClick={toggleSound} aria-label="Звук">
-            {soundOn ? '🔊' : '🔇'}
-          </button>
-        </div>
         <div className="difficulty">
           {LEVELS.map(l => (
             <button
@@ -339,11 +259,7 @@ function App() {
         <div className="modal-overlay">
           <div className="modal">
             <h2 className="modal-title">Победа! 🎉</h2>
-            <p className="modal-text">
-              {level.label}: {moves} {moves === 1 ? 'ход' : moves < 5 ? 'хода' : 'ходов'}
-              {isRecord && <span className="record-badge"> · Новый рекорд! 🏆</span>}
-              {best !== null && !isRecord && <span> · Рекорд: {best}</span>}
-            </p>
+            <p className="modal-text">Головоломка «{level.label}» решена. Поздравляем!</p>
             <button className="btn btn-primary" onClick={() => startGame(level)}>
               Играть снова
             </button>

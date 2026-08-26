@@ -76,28 +76,6 @@ body {
   letter-spacing: 1px;
 }
 
-.game-stats {
-  display: flex;
-  gap: 20px;
-  font-size: clamp(0.9rem, 3vw, 1.1rem);
-  color: #a0a0a0;
-}
-
-.stat-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 8px 16px;
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-}
-
-.stat-value {
-  color: #4facfe;
-  font-weight: 600;
-}
-
 .tubes-container {
   display: flex;
   flex-wrap: wrap;
@@ -368,19 +346,6 @@ body {
 
 /* ===== UI ===== */
 
-.icon-btn {
-  border: none;
-  background: rgba(255, 255, 255, 0.05);
-  font-size: 1.05rem;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-.icon-btn:hover { background: rgba(255, 255, 255, 0.14); transform: scale(1.08); }
-
 .difficulty {
   display: flex;
   gap: 8px;
@@ -405,11 +370,6 @@ body {
   color: #1a1a2e;
   border-color: transparent;
   box-shadow: 0 4px 16px rgba(79, 172, 254, 0.45);
-}
-
-.record-badge {
-  color: #ffd43b;
-  font-weight: 700;
 }
 
 .controls {
