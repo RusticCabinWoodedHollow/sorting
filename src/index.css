@@ -346,30 +346,26 @@ body {
 
 /* ===== UI ===== */
 
-.difficulty {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.pill {
+.icon-btn.restart {
   border: 2px solid rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.05);
   color: #a0a0a0;
-  padding: 7px 16px;
-  border-radius: 18px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.25s ease;
   -webkit-tap-highlight-color: transparent;
 }
-.pill:hover { background: rgba(255, 255, 255, 0.12); transform: translateY(-2px); }
-.pill.active {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  color: #1a1a2e;
-  border-color: transparent;
-  box-shadow: 0 4px 16px rgba(79, 172, 254, 0.45);
+.icon-btn.restart:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #4facfe;
+  border-color: rgba(79, 172, 254, 0.5);
+  transform: rotate(-90deg);
 }
 
 .controls {

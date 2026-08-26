@@ -1,14 +1,14 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import {
+  TUBE_CAPACITY,
+  NUM_TUBES,
+  NUM_COLORS,
+  isSolved,
+  checkLoss,
+  pourAmount,
+  generateLevel,
+} from './level.js';
 import './App.css';
-
-const TUBE_CAPACITY = 4;
-
-const LEVELS = [
-  { id: 'easy',   label: 'Легко',   colors: 4, tubes: 6 },
-  { id: 'normal', label: 'Средне',  colors: 5, tubes: 7 },
-  { id: 'hard',   label: 'Сложно',  colors: 6, tubes: 8 },
-  { id: 'insane', label: 'Безумие', colors: 7, tubes: 9 },
-];
 
 const COLOR_CLASS = [
   'liquid-red', 'liquid-blue', 'liquid-green', 'liquid-yellow',
@@ -16,72 +16,7 @@ const COLOR_CLASS = [
 ];
 const CONFETTI_COLORS = ['#4facfe', '#00f2fe', '#51cf66', '#ffd43b', '#da77f2', '#ffa94d', '#ff6b6b'];
 
-function isSolved(level) {
-  for (const tube of level) {
-    if (tube.length === 0) continue;
-    if (tube.length !== TUBE_CAPACITY) return false;
-    if (!tube.every(c => c === tube[0])) return false;
-  }
-  return true;
-}
-
-function checkLoss(level) {
-  for (let i = 0; i < level.length; i++) {
-    if (level[i].length === 0) continue;
-    const top = level[i][level[i].length - 1];
-    for (let j = 0; j < level.length; j++) {
-      if (i === j) continue;
-      const other = level[j];
-      if (other.length < TUBE_CAPACITY && (other.length === 0 || other[other.length - 1] === top)) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-/* Сколько единиц можно перелить: весь верхний слой одного цвета,
-   либо максимум, что влезает (когда весь слой не помещается). */
-function pourAmount(from, to) {
-  if (to.length >= TUBE_CAPACITY) return 0;
-  const top = from[from.length - 1];
-  if (to.length > 0 && to[to.length - 1] !== top) return 0;
-  let run = 0;
-  for (let i = from.length - 1; i >= 0 && from[i] === top; i--) run++;
-  return Math.min(run, TUBE_CAPACITY - to.length);
-}
-
-/* Генерация гарантированно решаемого уровня:
-   стартуем из решённого состояния и делаем случайные ЗАКОННЫЕ ходы.
-   Любой такой ход обратим, значит последность обратно решает финал. */
-function generateLevel(colors, tubesCount) {
-  const solved = () =>
-    Array.from({ length: tubesCount }, (_, i) => (i < colors ? Array(TUBE_CAPACITY).fill(i) : []));
-
-  let level = solved();
-  let mixed = 0;
-  const targetMoves = 70 + colors * 18;
-  let guard = 0;
-  while (mixed < targetMoves && guard < 20000) {
-    guard++;
-    const a = Math.floor(Math.random() * tubesCount);
-    const b = Math.floor(Math.random() * tubesCount);
-    if (a === b || level[a].length === 0 || level[b].length >= TUBE_CAPACITY) continue;
-    const topA = level[a][level[a].length - 1];
-    if (level[b].length > 0 && level[b][level[b].length - 1] !== topA) continue;
-    level[b].push(level[a].pop());
-    mixed++;
-    if (isSolved(level)) { level = solved(); mixed = 0; }
-  }
-  if (isSolved(level)) return generateLevel(colors, tubesCount);
-  return level;
-}
-
 function App() {
-  const [levelId, setLevelId] = useState(() => {
-    const saved = localStorage.getItem('wsp_level');
-    return LEVELS.some(l => l.id === saved) ? saved : 'normal';
-  });
   const [tubes, setTubes] = useState([]);
   const [selectedTube, setSelectedTube] = useState(null);
   const [isWon, setIsWon] = useState(false);
@@ -92,10 +27,8 @@ function App() {
   const [burst, setBurst] = useState(null);   // {tube, key}
   const effectKey = useRef(0);
 
-  const level = LEVELS.find(l => l.id === levelId) || LEVELS[1];
-
-  const startGame = useCallback((lv) => {
-    setTubes(generateLevel(lv.colors, lv.tubes));
+  const startGame = useCallback(() => {
+    setTubes(generateLevel().level);
     setSelectedTube(null);
     setIsWon(false);
     setIsLost(false);
@@ -106,14 +39,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    startGame(LEVELS.find(l => l.id === levelId) || LEVELS[1]);
-  }, [levelId, startGame]);
-
-  const changeLevel = (id) => {
-    if (id === levelId) return;
-    localStorage.setItem('wsp_level', id);
-    setLevelId(id);
-  };
+    startGame();
+  }, [startGame]);
 
   const createParticles = () => {
     setParticles(Array.from({ length: 120 }, (_, i) => ({
@@ -203,20 +130,9 @@ function App() {
 
       <div className="game-header">
         <h1 className="game-title">Water Sort</h1>
-        <div className="difficulty">
-          {LEVELS.map(l => (
-            <button
-              key={l.id}
-              className={`pill ${l.id === levelId ? 'active' : ''}`}
-              onClick={() => changeLevel(l.id)}
-            >
-              {l.label}
-            </button>
-          ))}
-        </div>
       </div>
 
-      <div className={`tubes-container ${tubes.length >= 8 ? 'dense' : ''}`}>
+      <div className="tubes-container">
         {tubes.map((tube, tubeIndex) => {
           const completed = tube.length === TUBE_CAPACITY && tube.every(c => c === tube[0]);
           return (
@@ -250,8 +166,14 @@ function App() {
       </div>
 
       <div className="controls">
-        <button className="btn btn-primary" onClick={() => startGame(level)}>
+        <button className="btn btn-primary" onClick={startGame}>
           Новая игра
+        </button>
+        <button className="icon-btn restart" onClick={startGame} aria-label="Начать заново" title="Начать заново">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+            <polyline points="21 3 21 9 15 9" />
+          </svg>
         </button>
       </div>
 
@@ -259,8 +181,8 @@ function App() {
         <div className="modal-overlay">
           <div className="modal">
             <h2 className="modal-title">Победа! 🎉</h2>
-            <p className="modal-text">Головоломка «{level.label}» решена. Поздравляем!</p>
-            <button className="btn btn-primary" onClick={() => startGame(level)}>
+            <p className="modal-text">Все цвета отсортированы. Поздравляем!</p>
+            <button className="btn btn-primary" onClick={startGame}>
               Играть снова
             </button>
           </div>
@@ -271,9 +193,9 @@ function App() {
         <div className="modal-overlay">
           <div className="modal">
             <h2 className="modal-title">Тупик! 😔</h2>
-            <p className="modal-text">Доступных ходов не осталось. Попробуйте ещё раз.</p>
-            <button className="btn btn-primary" onClick={() => startGame(level)}>
-              Ещё раз
+            <p className="modal-text">Доступных ходов не осталось. Начните заново.</p>
+            <button className="btn btn-primary" onClick={startGame}>
+              Начать заново
             </button>
           </div>
         </div>
