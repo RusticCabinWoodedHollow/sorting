@@ -4,12 +4,20 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#1a1a2e" />
+    <meta name="theme-color" content="#141428" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Water Sort Puzzle</title>
-    <script type="module" crossorigin src="./assets/index-C80pAF9X.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CEi9175d.css">
+    <script>
+      // применяем сохранённую тему до первого отрисовки — без «вспышки»
+      try {
+        if (localStorage.getItem('ws-theme') === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } catch (e) {}
+    </script>
+    <script type="module" crossorigin src="./assets/index-CvdKobLV.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BQ1fj433.css">
   <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
   <body>
     <div id="root"></div>
