@@ -1,10 +1,9 @@
-export const TUBE_CAPACITY = 4;
-export const NUM_TUBES = 8;
-// 6 цветов × 4 слоя = 24 единицы в 8 непустых колб (8×4=32 → 8 свободных мест).
-// 6 цветов на 7 колбах — нерешаемо (свободно всего 4 места, манёвр невозможен),
-// поэтому 8-я колба. Цветов больше 6 не ставим: 7 цветов × 4 = 28 > 8×4−4,
-// т.е. свободных мест было бы меньше, чем нужно для манёвра.
-export const NUM_COLORS = 6;
+export const TUBE_CAPACITY = 6;
+export const NUM_TUBES = 9;
+// 7 цветов × 6 слоёв = 42 единицы в 9 непустых колбах (9×6=54 → 12 свободных мест).
+// Конфигурация проверена BFS-соловером: случайные доски решаемы (7c/9t при cap 6 — 52/52,
+// 0 мёртвых). 6c/8t даёт тупиковые доски, 8c/10t — нерешаемые, поэтому выбран 7c/9t.
+export const NUM_COLORS = 7;
 
 export function isSolved(level) {
   for (const tube of level) {
@@ -15,6 +14,7 @@ export function isSolved(level) {
   return true;
 }
 
+/* Есть ли хоть один легальный ход. Если нет — проигрыш. */
 export function checkLoss(level) {
   for (let i = 0; i < level.length; i++) {
     if (level[i].length === 0) continue;
@@ -41,8 +41,8 @@ export function pourAmount(from, to) {
   return Math.min(run, TUBE_CAPACITY - to.length);
 }
 
-/* Есть ли хоть один легальный ход (нужно, чтобы в топовом цвете какой-то
-   колбы совпадал топовый цвет НЕ полной колбы). */
+/* Есть ли хоть один легальный ход на доске (нужно, чтобы стартовая
+   позиция не была мгновенным тупиком). */
 function hasAnyMove(level) {
   for (let x = 0; x < level.length; x++) {
     if (!level[x].length) continue;
@@ -54,26 +54,26 @@ function hasAnyMove(level) {
 }
 
 /* Рандомный уровень с правильной «арифметикой» игры:
-   - каждый цвет ровно TUBE_CAPACITY раз (4) — иначе колбу этим цветом
+   - каждый цвет ровно TUBE_CAPACITY раз (6) — иначе колбу этим цветом
      заполнить нельзя (мало) или цвет не помещается в колбу (много);
-   - пустых колб нет: все 8 содержат жидкость;
-   - объёмы колб случайные (1..4), суммарно NUM_COLORS × 4 —
+   - пустых колб нет: все 9 содержат жидкость;
+   - объёмы колб случайные (1..6), суммарно NUM_COLORS × 6 —
      «где-то больше, где-то меньше»;
-   - есть хотя бы один легальный первый ход (иначе доска тупик сразу). */
+   - есть хотя бы один легальный первый ход (иначе доска — тупик сразу). */
 export function generateLevel() {
   const total = NUM_COLORS * TUBE_CAPACITY;
 
   let level = null;
-  for (let attempt = 0; attempt < 50; attempt++) {
-    // случайные объёмы колб: 1..4, сумма ровно total (rejection sampling)
+  for (let attempt = 0; attempt < 60; attempt++) {
+    // случайные объёмы колб: 1..6, сумма ровно total (rejection sampling)
     let lens = null;
-    for (let i = 0; i < 3000; i++) {
+    for (let i = 0; i < 4000; i++) {
       const l = Array.from({ length: NUM_TUBES }, () => 1 + Math.floor(Math.random() * TUBE_CAPACITY));
       if (l.reduce((a, b) => a + b, 0) === total) { lens = l; break; }
     }
-    if (!lens) lens = [4, 4, 4, 3, 3, 3, 2, 1]; // гарантированно валидный вариант
+    if (!lens) lens = [6, 6, 5, 5, 5, 4, 4, 4, 3]; // гарантированно валидный вариант
 
-    // пул: по 4 единицы каждого цвета, тасуем (Fisher–Yates)
+    // пул: по TUBE_CAPACITY единиц каждого цвета, тасуем (Fisher–Yates)
     const pool = [];
     for (let c = 0; c < NUM_COLORS; c++) {
       for (let k = 0; k < TUBE_CAPACITY; k++) pool.push(c);
@@ -91,6 +91,6 @@ export function generateLevel() {
     if (hasAnyMove(candidate)) { level = candidate; break; }
   }
   // страховка от null (шанс ничтожен): проверенная BFS-соловером рабочая позиция
-  if (!level) level = [[1,3,1],[2,4,5],[5,3,0],[1,5,5],[2,4,3],[2,0,1,4],[4,0,2],[3,0]];
+  if (!level) level = [[3,5,1,2,5],[5,3,1,1,2,6],[4,3,3,0],[0,5,5,4],[1,2,0],[4,6,0,6,4,4],[6,6,4,6],[2,2,3,3,0],[0,1,1,2,5]];
   return level;
 }

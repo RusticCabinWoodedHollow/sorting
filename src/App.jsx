@@ -1,8 +1,6 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   TUBE_CAPACITY,
-  NUM_TUBES,
-  NUM_COLORS,
   isSolved,
   checkLoss,
   pourAmount,
@@ -16,16 +14,28 @@ const COLOR_CLASS = [
 ];
 const CONFETTI_COLORS = ['#4facfe', '#00f2fe', '#51cf66', '#ffd43b', '#da77f2', '#ffa94d', '#ff6b6b'];
 
+const THEME_KEY = 'ws-theme';
+
 function App() {
   const [tubes, setTubes] = useState([]);
   const [selectedTube, setSelectedTube] = useState(null);
   const [isWon, setIsWon] = useState(false);
   const [isLost, setIsLost] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    try { return localStorage.getItem(THEME_KEY) === 'light' ? 'light' : 'dark'; }
+    catch { return 'dark'; }
+  });
   const [particles, setParticles] = useState([]);
-  const [splash, setSplash] = useState(null); // {tube, key}
+  const [splash, setSplash] = useState(null); // {tube, key, fill}
+  const [pour, setPour] = useState(null);     // {tube, key, amt} — только что влитые слои
   const [shake, setShake] = useState(null);   // {tube, key}
   const [burst, setBurst] = useState(null);   // {tube, key}
   const effectKey = useRef(0);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    try { localStorage.setItem(THEME_KEY, theme); } catch { /* приватный режим */ }
+  }, [theme]);
 
   const startGame = useCallback(() => {
     setTubes(generateLevel());
@@ -34,6 +44,7 @@ function App() {
     setIsLost(false);
     setParticles([]);
     setSplash(null);
+    setPour(null);
     setShake(null);
     setBurst(null);
   }, []);
@@ -79,7 +90,13 @@ function App() {
       });
       setTubes(newTubes);
       setSelectedTube(null); // фокус снимается сразу после перелива
-      setSplash({ tube: tubeIndex, key: ++effectKey.current });
+      // анимация заполнения: влитые слои вырастают из 0 + брызги на уровне поверхности
+      setPour({ tube: tubeIndex, key: ++effectKey.current, amt });
+      setSplash({
+        tube: tubeIndex,
+        key: ++effectKey.current,
+        fill: newTubes[tubeIndex].length / TUBE_CAPACITY,
+      });
 
       const dest = newTubes[tubeIndex];
       if (dest.length === TUBE_CAPACITY && dest.every(c => c === dest[0])) {
@@ -130,11 +147,29 @@ function App() {
 
       <div className="game-header">
         <h1 className="game-title">Water Sort</h1>
+        <button
+          className="icon-btn theme"
+          onClick={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))}
+          aria-label="Сменить тему"
+          title="Сменить тему"
+        >
+          {theme === 'dark' ? (
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <circle cx="12" cy="12" r="4.5" />
+              <path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M19.4 4.6l-1.8 1.8M6.4 17.6l-1.8 1.8" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z" />
+            </svg>
+          )}
+        </button>
       </div>
 
-      <div className={`tubes-container${tubes.length >= 8 ? ' dense' : ''}`}>
+      <div className="tubes-container dense">
         {tubes.map((tube, tubeIndex) => {
           const completed = tube.length === TUBE_CAPACITY && tube.every(c => c === tube[0]);
+          const isPourTarget = pour && pour.tube === tubeIndex;
           return (
             <div
               key={tubeIndex}
@@ -148,15 +183,24 @@ function App() {
             >
               <div className="tube">
                 <div className="liquid-container">
-                  {tube.map((colorIndex, liquidIndex) => (
-                    <div
-                      key={liquidIndex}
-                      className={`liquid ${COLOR_CLASS[colorIndex] || 'liquid-blue'}`}
-                      style={{ height: `${100 / TUBE_CAPACITY}%` }}
-                    />
-                  ))}
+                  {tube.map((colorIndex, liquidIndex) => {
+                    const isNew = isPourTarget && liquidIndex >= tube.length - pour.amt;
+                    return (
+                      <div
+                        key={isNew ? `n${pour.key}-${liquidIndex}` : liquidIndex}
+                        className={`liquid ${COLOR_CLASS[colorIndex] || 'liquid-blue'}${isNew ? ' layer-in' : ''}`}
+                        style={{ height: `${100 / TUBE_CAPACITY}%` }}
+                      />
+                    );
+                  })}
                 </div>
-                {splash && splash.tube === tubeIndex && <div key={splash.key} className="splash" />}
+                {splash && splash.tube === tubeIndex && (
+                  <div
+                    key={splash.key}
+                    className="splash"
+                    style={{ top: `calc(${(1 - splash.fill) * 100}% - 8px)` }}
+                  />
+                )}
                 {burst && burst.tube === tubeIndex && <div key={burst.key} className="burst" />}
                 {shake && shake.tube === tubeIndex && <div key={shake.key} className="shake-flash" />}
               </div>
@@ -166,9 +210,6 @@ function App() {
       </div>
 
       <div className="controls">
-        <button className="btn btn-primary" onClick={startGame}>
-          Новая игра
-        </button>
         <button className="icon-btn restart" onClick={startGame} aria-label="Начать заново" title="Начать заново">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 12a9 9 0 1 1-2.64-6.36" />
@@ -192,8 +233,8 @@ function App() {
       {isLost && (
         <div className="modal-overlay">
           <div className="modal">
-            <h2 className="modal-title">Тупик! 😔</h2>
-            <p className="modal-text">Доступных ходов не осталось. Начните заново.</p>
+            <h2 className="modal-title lose">Проигрыш! 🏳️</h2>
+            <p className="modal-text">Ходов больше нет. Начните заново.</p>
             <button className="btn btn-primary" onClick={startGame}>
               Начать заново
             </button>
