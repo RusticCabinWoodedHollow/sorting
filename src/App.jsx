@@ -132,7 +132,7 @@ function App() {
         <h1 className="game-title">Water Sort</h1>
       </div>
 
-      <div className="tubes-container">
+      <div className={`tubes-container${tubes.length >= 8 ? ' dense' : ''}`}>
         {tubes.map((tube, tubeIndex) => {
           const completed = tube.length === TUBE_CAPACITY && tube.every(c => c === tube[0]);
           return (
