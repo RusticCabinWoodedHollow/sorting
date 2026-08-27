@@ -1,27 +1,39 @@
-/* ===== темы ===== */
+/* ===== темы: неон «дзен» (стиль Тетриса) ===== */
 :root {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Rubik', 'Segoe UI', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: dark;
-  --bg1: #141428;
-  --bg2: #16213e;
-  --bg3: #0f3460;
-  --text: #e8ecf4;
-  --muted: #9aa7bd;
-  --panel: rgba(255, 255, 255, 0.05);
-  --panel-border: rgba(255, 255, 255, 0.16);
-  --title-grad: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  --tube-border: rgba(255, 255, 255, 0.30);
-  --glass-hi: 0.30;
-  --shadow: rgba(0, 0, 0, 0.45);
-  --shadow-soft: rgba(0, 0, 0, 0.25);
-  --overlay: rgba(5, 8, 20, 0.78);
-  --modal-bg: linear-gradient(150deg, #1a1a2e 0%, #16213e 100%);
-  --bubble-bg: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.5), rgba(120, 190, 255, 0.08) 60%, rgba(120, 190, 255, 0.02));
-  --bubble-border: rgba(255, 255, 255, 0.18);
-  --ripple: rgba(255, 255, 255, 0.20);
+  --bg-base: #040a16;
+  --bg:
+    radial-gradient(1100px 750px at 88% -8%, rgba(0, 240, 255, 0.13), transparent 60%),
+    radial-gradient(950px 700px at -12% 108%, rgba(255, 122, 0, 0.10), transparent 55%),
+    radial-gradient(900px 650px at 108% 70%, rgba(230, 77, 255, 0.10), transparent 60%),
+    radial-gradient(900px 900px at 50% 120%, rgba(63, 125, 255, 0.09), transparent 60%),
+    linear-gradient(#061224, #040a16 55%, #02060d);
+  --grid-line: rgba(110, 170, 230, 0.05);
+  --vignette: rgba(2, 6, 12, 0.75);
+  --text: #eefaff;
+  --muted: #7d93a8;
+  --panel: rgba(16, 30, 48, 0.80);
+  --panel-border: rgba(0, 232, 255, 0.22);
+  --accent: #00f0ff;
+  --accent-dim: rgba(0, 240, 255, 0.4);
+  --accent-soft: rgba(0, 240, 255, 0.12);
+  --title-glow: 0 0 12px rgba(0, 240, 255, 0.9), 0 0 42px rgba(0, 240, 255, 0.55), 0 0 90px rgba(230, 77, 255, 0.4);
+  --tube-border: rgba(90, 160, 220, 0.35);
+  --tube-glass: rgba(255, 255, 255, 0.07);
+  --glass-hi: 0.14;
+  --shadow: rgba(0, 0, 0, 0.55);
+  --shadow-soft: rgba(0, 0, 0, 0.35);
+  --panel-shadow: 0 12px 32px rgba(0, 0, 0, 0.42), 0 0 24px rgba(0, 240, 255, 0.06);
+  --overlay: rgba(2, 6, 13, 0.82);
+  --modal-bg: linear-gradient(160deg, rgba(12, 26, 46, 0.96), rgba(6, 13, 26, 0.97));
+  --bubble-bg: radial-gradient(circle at 32% 30%, rgba(0, 240, 255, 0.22), rgba(0, 240, 255, 0.05) 55%, rgba(0, 240, 255, 0.01));
+  --bubble-border: rgba(0, 240, 255, 0.16);
+  --ripple: rgba(255, 255, 255, 0.22);
+  --selected-glow: 0 0 0 3px rgba(0, 240, 255, 0.45), 0 0 30px rgba(0, 240, 255, 0.55), 0 16px 26px var(--shadow), inset 0 0 20px rgba(0, 240, 255, 0.16);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -31,23 +43,35 @@
 
 :root[data-theme='light'] {
   color-scheme: light;
-  --bg1: #eaf3ff;
-  --bg2: #dceaff;
-  --bg3: #c3dcfb;
-  --text: #22334e;
-  --muted: #5c6f8c;
-  --panel: rgba(255, 255, 255, 0.62);
-  --panel-border: rgba(60, 100, 170, 0.22);
-  --title-grad: linear-gradient(135deg, #1c7ed6 0%, #0ca678 100%);
-  --tube-border: rgba(120, 160, 220, 0.55);
-  --glass-hi: 0.55;
-  --shadow: rgba(45, 75, 130, 0.28);
-  --shadow-soft: rgba(45, 75, 130, 0.16);
-  --overlay: rgba(35, 55, 95, 0.42);
-  --modal-bg: linear-gradient(150deg, #ffffff 0%, #eaf2ff 100%);
-  --bubble-bg: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.95), rgba(160, 200, 250, 0.25) 60%, rgba(160, 200, 250, 0.05));
-  --bubble-border: rgba(120, 165, 230, 0.40);
-  --ripple: rgba(70, 120, 200, 0.16);
+  --bg-base: #e9f3fb;
+  --bg:
+    radial-gradient(1100px 750px at 88% -8%, rgba(0, 190, 235, 0.16), transparent 60%),
+    radial-gradient(950px 700px at -12% 108%, rgba(255, 160, 40, 0.10), transparent 55%),
+    radial-gradient(900px 650px at 108% 70%, rgba(190, 90, 240, 0.09), transparent 60%),
+    radial-gradient(900px 900px at 50% 120%, rgba(80, 140, 255, 0.10), transparent 60%),
+    linear-gradient(#f2f9ff, #dcecfb 55%, #cfe2f7);
+  --grid-line: rgba(40, 110, 190, 0.07);
+  --vignette: rgba(120, 160, 210, 0.18);
+  --text: #16283f;
+  --muted: #54718c;
+  --panel: rgba(255, 255, 255, 0.66);
+  --panel-border: rgba(0, 150, 200, 0.30);
+  --accent: #00a8c4;
+  --accent-dim: rgba(0, 150, 200, 0.45);
+  --accent-soft: rgba(0, 150, 200, 0.12);
+  --title-glow: 0 0 10px rgba(0, 170, 215, 0.35), 0 0 34px rgba(0, 170, 215, 0.2);
+  --tube-border: rgba(90, 150, 215, 0.50);
+  --tube-glass: rgba(255, 255, 255, 0.55);
+  --glass-hi: 0.50;
+  --shadow: rgba(50, 85, 140, 0.28);
+  --shadow-soft: rgba(50, 85, 140, 0.18);
+  --panel-shadow: 0 12px 32px rgba(50, 85, 140, 0.18), 0 0 24px rgba(0, 170, 215, 0.08);
+  --overlay: rgba(30, 60, 100, 0.45);
+  --modal-bg: linear-gradient(160deg, rgba(255, 255, 255, 0.97), rgba(234, 245, 255, 0.97));
+  --bubble-bg: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.95), rgba(120, 200, 250, 0.25) 55%, rgba(120, 200, 250, 0.05));
+  --bubble-border: rgba(80, 160, 230, 0.35);
+  --ripple: rgba(70, 120, 200, 0.18);
+  --selected-glow: 0 0 0 3px rgba(0, 150, 200, 0.4), 0 0 26px rgba(0, 160, 210, 0.5), 0 16px 26px var(--shadow), inset 0 0 20px rgba(0, 150, 200, 0.14);
 }
 
 * {
@@ -77,9 +101,34 @@ html, body {
 }
 
 body {
-  background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 50%, var(--bg3) 100%);
+  background-color: var(--bg-base);
+  background-image: var(--bg);
+  background-attachment: fixed;
   min-height: 100vh;
-  transition: background 0.5s ease;
+  transition: background-color 0.5s ease;
+}
+
+/* сетка + виньетка поверх фона (как в Тетрисе) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(90% 80% at 50% 45%, #000 30%, transparent 100%);
+  mask-image: radial-gradient(90% 80% at 50% 45%, #000 30%, transparent 100%);
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(100% 90% at 50% 45%, transparent 55%, var(--vignette));
 }
 
 .game-container {
@@ -105,13 +154,13 @@ body {
 }
 
 .game-title {
-  font-size: clamp(1.4rem, 5vw, 2.3rem);
-  font-weight: 700;
-  background: var(--title-grad);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: 1px;
+  font-family: 'Russo One', 'Segoe UI', sans-serif;
+  font-size: clamp(1.5rem, 5vw, 2.4rem);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  text-shadow: var(--title-glow);
 }
 
 /* ===== колбы ===== */
@@ -147,7 +196,7 @@ body {
   left: 14%;
   right: 14%;
   height: 12px;
-  background: radial-gradient(ellipse at center, var(--shadow) 0%, rgba(0, 0, 0, 0) 70%);
+  background: radial-gradient(ellipse at center, var(--shadow) 0%, transparent 70%);
   border-radius: 50%;
   opacity: 0.55;
   transition: transform 0.3s ease, opacity 0.3s ease;
@@ -171,12 +220,8 @@ body {
 }
 .tube-wrapper.selected .tube {
   animation: tubePulse 1.5s ease-in-out infinite;
-  border-color: rgba(79, 172, 254, 0.95);
-  box-shadow:
-    0 0 0 3px rgba(79, 172, 254, 0.5),
-    0 0 30px rgba(79, 172, 254, 0.7),
-    0 16px 26px var(--shadow),
-    inset 0 0 20px rgba(79, 172, 254, 0.18);
+  border-color: var(--accent);
+  box-shadow: var(--selected-glow);
 }
 .tube-wrapper.selected .tube::after {
   opacity: 0.9;
@@ -187,11 +232,11 @@ body {
   cursor: default;
 }
 .tube-wrapper.completed .tube {
-  filter: brightness(0.78) saturate(0.8);
-  opacity: 0.62;
+  filter: brightness(0.72) saturate(0.7);
+  opacity: 0.55;
   border-color: var(--panel-border);
   box-shadow:
-    inset 0 0 26px rgba(0, 0, 0, 0.30),
+    inset 0 0 26px rgba(0, 0, 0, 0.35),
     0 6px 16px var(--shadow-soft);
   animation: none;
 }
@@ -219,20 +264,21 @@ body {
   height: clamp(180px, 48vw, 330px);
   position: relative;
   background:
-    radial-gradient(ellipse 70% 22% at 50% 0%, rgba(255, 255, 255, calc(var(--glass-hi) * 0.6)) 0%, rgba(255, 255, 255, 0) 60%),
+    radial-gradient(ellipse 70% 22% at 50% 0%, rgba(255, 255, 255, calc(var(--glass-hi) * 0.5)) 0%, transparent 60%),
     linear-gradient(90deg,
       rgba(255, 255, 255, var(--glass-hi)) 0%,
       rgba(255, 255, 255, calc(var(--glass-hi) * 0.18)) 22%,
       rgba(255, 255, 255, calc(var(--glass-hi) * 0.06)) 55%,
       rgba(255, 255, 255, calc(var(--glass-hi) * 0.45)) 100%),
-    linear-gradient(180deg, rgba(255, 255, 255, calc(var(--glass-hi) * 0.28)) 0%, rgba(255, 255, 255, calc(var(--glass-hi) * 0.08)) 100%);
+    linear-gradient(180deg, rgba(255, 255, 255, calc(var(--glass-hi) * 0.28)) 0%, rgba(255, 255, 255, calc(var(--glass-hi) * 0.08)) 100%),
+    var(--tube-glass);
   border-radius: 10px 10px 48% 48% / 10px 10px 13% 13%;
   overflow: hidden;
   border: 2px solid var(--tube-border);
   border-top: 2px solid transparent;
   box-shadow:
-    inset 0 0 18px rgba(255, 255, 255, calc(var(--glass-hi) * 0.35)),
-    inset 0 -12px 22px rgba(255, 255, 255, calc(var(--glass-hi) * 0.18)),
+    inset 0 0 18px rgba(255, 255, 255, calc(var(--glass-hi) * 0.3)),
+    inset 0 -12px 22px rgba(255, 255, 255, calc(var(--glass-hi) * 0.15)),
     0 10px 26px var(--shadow);
   transition: all 0.3s ease;
 }
@@ -245,11 +291,11 @@ body {
   bottom: 6%;
   left: 9%;
   width: 14%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.04));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0.03));
   border-radius: 10px;
   filter: blur(1px);
   pointer-events: none;
-  opacity: 0.7;
+  opacity: 0.6;
   transition: opacity 0.3s ease;
 }
 
@@ -262,7 +308,7 @@ body {
   transform: translateX(-50%);
   width: 92%;
   height: 12px;
-  background: rgba(255, 255, 255, calc(var(--glass-hi) * 0.5));
+  background: rgba(255, 255, 255, calc(var(--glass-hi) * 0.4));
   border-radius: 50%;
   border: 2px solid var(--tube-border);
   z-index: 3;
@@ -283,7 +329,7 @@ body {
   width: 100%;
   flex: 0 0 auto;
   position: relative;
-  box-shadow: inset 0 -3px 5px rgba(0, 0, 0, 0.18), inset 0 1px 2px rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 -3px 5px rgba(0, 0, 0, 0.22), inset 0 1px 2px rgba(255, 255, 255, 0.18);
 }
 
 /* живая поверхность: бегущая волна блика на границе слоя */
@@ -294,7 +340,7 @@ body {
   left: 0;
   right: 0;
   height: 7px;
-  background: radial-gradient(ellipse 45% 130% at 50% 40%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 70%);
+  background: radial-gradient(ellipse 45% 130% at 50% 40%, rgba(255, 255, 255, 0.45) 0%, transparent 70%);
   background-size: 55% 100%;
   background-repeat: repeat-x;
   opacity: 0.75;
@@ -314,7 +360,7 @@ body {
   left: 0;
   right: 0;
   height: 5px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, transparent 100%);
   border-radius: 50%;
   opacity: 0.4;
   pointer-events: none;
@@ -331,13 +377,14 @@ body {
   animation: layerIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.liquid-red { background: linear-gradient(180deg, #ff6b6b 0%, #c92a2a 100%); }
-.liquid-blue { background: linear-gradient(180deg, #4facfe 0%, #0077b6 100%); }
-.liquid-green { background: linear-gradient(180deg, #51cf66 0%, #2b8a3e 100%); }
-.liquid-yellow { background: linear-gradient(180deg, #ffd43b 0%, #fcc419 100%); }
-.liquid-purple { background: linear-gradient(180deg, #da77f2 0%, #be4bdb 100%); }
-.liquid-orange { background: linear-gradient(180deg, #ffa94d 0%, #fd7e14 100%); }
-.liquid-cyan { background: linear-gradient(180deg, #3bc9db 0%, #0b7285 100%); }
+/* неоновые жидкости */
+.liquid-red { background: linear-gradient(180deg, #ff4d6a 0%, #c40f35 100%); }
+.liquid-blue { background: linear-gradient(180deg, #2f7dff 0%, #0d3fc4 100%); }
+.liquid-green { background: linear-gradient(180deg, #4dff9e 0%, #0f9e52 100%); }
+.liquid-yellow { background: linear-gradient(180deg, #ffe14d 0%, #ffb300 100%); }
+.liquid-purple { background: linear-gradient(180deg, #e64dff 0%, #8f14c4 100%); }
+.liquid-orange { background: linear-gradient(180deg, #ffb100 0%, #ff5e00 100%); }
+.liquid-cyan { background: linear-gradient(180deg, #38e8ff 0%, #0779b8 100%); }
 
 /* ===== эффекты ===== */
 
@@ -366,7 +413,8 @@ body {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.95);
+  border: 3px solid var(--accent);
+  box-shadow: 0 0 14px var(--accent-dim);
   pointer-events: none;
   animation: burstRing 0.7s ease-out forwards;
 }
@@ -387,7 +435,7 @@ body {
   position: absolute;
   inset: 0;
   border-radius: 10px 10px 48% 48% / 10px 10px 13% 13%;
-  background: rgba(255, 80, 80, 0.18);
+  background: rgba(255, 60, 90, 0.18);
   pointer-events: none;
   animation: flashFade 0.4s ease forwards;
 }
@@ -408,6 +456,7 @@ body {
   border-radius: 50%;
   background: var(--bubble-bg);
   border: 1px solid var(--bubble-border);
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.08);
   animation: bubbleUp linear infinite;
 }
 @keyframes bubbleUp {
@@ -419,25 +468,25 @@ body {
 /* ===== UI ===== */
 
 .icon-btn {
-  border: 2px solid var(--panel-border);
+  font-family: 'Russo One', sans-serif;
+  border: 1px solid var(--panel-border);
   background: var(--panel);
   color: var(--text);
   width: 46px;
   height: 46px;
-  border-radius: 50%;
+  border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.25s ease;
   -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 0 0 1px var(--panel-border), 0 4px 14px var(--shadow-soft);
-  opacity: 0.95;
+  box-shadow: 0 4px 14px var(--shadow-soft), 0 0 12px rgba(0, 240, 255, 0.05);
 }
 .icon-btn:hover {
-  background: rgba(79, 172, 254, 0.16);
-  color: #4facfe;
-  border-color: rgba(79, 172, 254, 0.55);
+  color: var(--accent);
+  border-color: var(--accent-dim);
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.25), 0 4px 14px var(--shadow-soft);
   transform: translateY(-2px);
 }
 
@@ -463,41 +512,43 @@ body {
 }
 
 .btn {
+  font-family: 'Russo One', sans-serif;
   padding: 12px 30px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 400;
   border: none;
-  border-radius: 999px;
+  border-radius: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.1em;
   -webkit-tap-highlight-color: transparent;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  color: #10131f;
-  box-shadow: 0 5px 20px rgba(79, 172, 254, 0.4);
+  background: linear-gradient(135deg, #6ff7ff 0%, #00cfe8 100%);
+  color: #04252e;
+  box-shadow: 0 8px 30px rgba(0, 240, 255, 0.4), 0 0 46px rgba(0, 240, 255, 0.18);
 }
 
 .btn-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(79, 172, 254, 0.6);
+  filter: brightness(1.08);
+  box-shadow: 0 10px 36px rgba(0, 240, 255, 0.55), 0 0 60px rgba(0, 240, 255, 0.28);
 }
 
 .btn-primary:active {
-  transform: translateY(-1px);
+  transform: translateY(-1px) scale(0.98);
 }
 
 .btn-secondary {
   background: var(--panel);
   color: var(--text);
-  border: 2px solid var(--panel-border);
+  border: 1px solid var(--panel-border);
 }
 
 .btn-secondary:hover {
-  background: rgba(79, 172, 254, 0.15);
+  border-color: var(--accent-dim);
   transform: translateY(-3px);
 }
 
@@ -524,12 +575,12 @@ body {
 .modal {
   background: var(--modal-bg);
   padding: 40px;
-  border-radius: 32px;
+  border-radius: 26px;
   text-align: center;
   max-width: 90%;
   width: 400px;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
-  border: 1px solid var(--panel-border);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55), 0 0 70px rgba(0, 240, 255, 0.1), 0 0 120px rgba(230, 77, 255, 0.07);
+  border: 1px solid rgba(0, 232, 255, 0.3);
   animation: modalSlide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   color: var(--text);
 }
@@ -546,19 +597,18 @@ body {
 }
 
 .modal-title {
+  font-family: 'Russo One', sans-serif;
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 400;
+  letter-spacing: 0.06em;
   margin-bottom: 15px;
-  background: var(--title-grad);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text);
+  text-shadow: var(--title-glow);
 }
 
 .modal-title.lose {
-  background: linear-gradient(135deg, #ff8787 0%, #e8590c 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
+  color: #ff6b7a;
+  text-shadow: 0 0 12px rgba(255, 80, 100, 0.7), 0 0 42px rgba(255, 80, 100, 0.4), 0 0 90px rgba(230, 77, 255, 0.3);
 }
 
 .modal-text {
@@ -583,6 +633,7 @@ body {
   position: absolute;
   border-radius: 50%;
   animation: particleFall linear forwards;
+  box-shadow: 0 0 8px currentColor;
 }
 
 @keyframes particleFall {

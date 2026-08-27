@@ -12,7 +12,7 @@ const COLOR_CLASS = [
   'liquid-red', 'liquid-blue', 'liquid-green', 'liquid-yellow',
   'liquid-purple', 'liquid-orange', 'liquid-cyan',
 ];
-const CONFETTI_COLORS = ['#4facfe', '#00f2fe', '#51cf66', '#ffd43b', '#da77f2', '#ffa94d', '#ff6b6b'];
+const CONFETTI_COLORS = ['#38e8ff', '#00f0ff', '#4dff9e', '#ffe14d', '#e64dff', '#ffb100', '#ff4d6a'];
 
 const THEME_KEY = 'ws-theme';
 
