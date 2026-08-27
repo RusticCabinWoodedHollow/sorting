@@ -421,7 +421,7 @@ body {
 .icon-btn {
   border: 2px solid var(--panel-border);
   background: var(--panel);
-  color: var(--muted);
+  color: var(--text);
   width: 46px;
   height: 46px;
   border-radius: 50%;
@@ -431,6 +431,8 @@ body {
   justify-content: center;
   transition: all 0.25s ease;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 0 0 1px var(--panel-border), 0 4px 14px var(--shadow-soft);
+  opacity: 0.95;
 }
 .icon-btn:hover {
   background: rgba(79, 172, 254, 0.16);
