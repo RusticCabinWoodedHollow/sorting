@@ -30,7 +30,43 @@ function App() {
   const [pour, setPour] = useState(null);     // {tube, key, amt} — только что влитые слои
   const [shake, setShake] = useState(null);   // {tube, key}
   const [burst, setBurst] = useState(null);   // {tube, key}
+  const [installOpen, setInstallOpen] = useState(false);
+  const deferredPrompt = useRef(null);
   const effectKey = useRef(0);
+
+  /* PWA: кнопка установки — нативный prompt (Android/Chrome) либо
+     модалка-инструкция (iOS Safari и прочее, где prompt не дают) */
+  useEffect(() => {
+    if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return undefined;
+    const onBeforeInstall = (e) => {
+      e.preventDefault();
+      deferredPrompt.current = e;
+    };
+    const onInstalled = () => {
+      deferredPrompt.current = null;
+    };
+    window.addEventListener('beforeinstallprompt', onBeforeInstall);
+    window.addEventListener('appinstalled', onInstalled);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onBeforeInstall);
+      window.removeEventListener('appinstalled', onInstalled);
+    };
+  }, []);
+
+  const isIOS = () =>
+    /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  const handleInstall = () => {
+    if (deferredPrompt.current) {
+      deferredPrompt.current.prompt();
+      deferredPrompt.current.userChoice.then(() => {
+        deferredPrompt.current = null;
+      });
+    } else {
+      setInstallOpen(true);
+    }
+  };
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -147,12 +183,25 @@ function App() {
 
       <div className="game-header">
         <h1 className="game-title">Water Sort</h1>
-        <button
-          className="icon-btn theme"
-          onClick={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))}
-          aria-label="Сменить тему"
-          title="Сменить тему"
-        >
+        <div className="header-actions">
+          <button
+            className="icon-btn install"
+            onClick={handleInstall}
+            aria-label="Установить приложение"
+            title="Установить приложение"
+          >
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
+              <path d="M12 8v6" />
+              <path d="M9.5 11.5L12 14l2.5-2.5" />
+            </svg>
+          </button>
+          <button
+            className="icon-btn theme"
+            onClick={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))}
+            aria-label="Сменить тему"
+            title="Сменить тему"
+          >
           {theme === 'dark' ? (
             <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <circle cx="12" cy="12" r="4.5" />
@@ -163,7 +212,8 @@ function App() {
               <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z" />
             </svg>
           )}
-        </button>
+          </button>
+        </div>
       </div>
 
       <div className="tubes-container dense">
@@ -237,6 +287,22 @@ function App() {
             <p className="modal-text">Ходов больше нет. Начните заново.</p>
             <button className="btn btn-primary" onClick={startGame}>
               Начать заново
+            </button>
+          </div>
+        </div>
+      )}
+
+      {installOpen && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2 className="modal-title">Установить 📲</h2>
+            <p className="modal-text">
+              {isIOS()
+                ? 'В Safari нажмите кнопку «Поделиться» внизу, затем «На экран Домой».'
+                : 'В меню браузера ⋮ выберите «Установить приложение» или «Добавить на главный экран».'}
+            </p>
+            <button className="btn btn-primary" onClick={() => setInstallOpen(false)}>
+              Понятно
             </button>
           </div>
         </div>

@@ -145,12 +145,30 @@ body::after {
   color: var(--text);
 }
 
+/* шапка: мобилка — 2 ряда (заголовок, кнопки), широкий экран — ряд с разнесением */
 .game-header {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
+  gap: 10px;
+}
+.game-header .header-actions {
+  display: flex;
+  gap: 10px;
+}
+@media (min-width: 640px) {
+  .game-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+  }
+  .game-header .header-actions {
+    gap: 8px;
+  }
 }
 
 .game-title {
@@ -494,14 +512,13 @@ body::after {
   transform: rotate(-90deg);
 }
 
-.icon-btn.theme {
-  position: absolute;
-  right: 4px;
-  top: 50%;
-  transform: translateY(-50%);
+.header-actions {
+  display: flex;
+  gap: 8px;
 }
+
 .icon-btn.theme:hover {
-  transform: translateY(-50%) rotate(180deg);
+  transform: rotate(180deg);
 }
 
 .controls {
